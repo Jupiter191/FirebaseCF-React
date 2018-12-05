@@ -36,12 +36,12 @@ exports.addItem = functions.https.onRequest((request, response) => {
         return database.on('value', (snapshot) => {
             snapshot.forEach((item) => {
                 items.push({
-                    id: item.id,
+                    id: item.key,
                     items: item.val().item
                 });
             });
 
-            response.send(200).json(items);
+            response.status(200).json(items);
         
         }, (error) => {
             response.status(error.code).json({
