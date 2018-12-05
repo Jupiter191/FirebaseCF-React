@@ -19,6 +19,35 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
 
 exports.addItem = functions.https.onRequest((request, response) => {
     return cors(request, response, () => {
+        if(request.method !== 'POST'){
+            return response.status(401).json({
+                message: 'Unauthorised'
+            });
+        }
+
+        console.log(request.body);
+
+        const item = request.body.item;
+        database.push({item});
+        console.log(database);
+
+        let items = [];
+
+        return database.on('value', (snapshot) => {
+            snapshot.forEach((item) => {
+                items.push({
+                    id: item.id,
+                    items: item.val().item
+                });
+            });
+
+            response.send(200).json(items);
         
+        }, (error) => {
+            response.status(error.code).json({
+                message: `ERROR : ${error.message}`
+            });
+        });
+
     });
 });
